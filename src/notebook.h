@@ -33,5 +33,11 @@ void view_all_notes();
 void search_notes();
 void delete_notes();
 void edit_note();
-void 
-void
+void view_note_by_id();
+void save_note(Note *note);
+void load_notes();
+Date get_current_date();
+void print_note(Note note);
+int get_next_id();
+
+#endif
