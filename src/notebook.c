@@ -147,6 +147,59 @@ void view_all_notes() {
     int visible_count = 0;
 
     for (int i = 0; i < note_count; i++) {
-        if
+        if (!notes[i].is_deleted) {
+            printf("%d. %s (ID:)\n",
+                   visible_count + 1,
+                   notes[i].title,
+                   notes[i].id);
+            visible_count++;
+        }
+    }
+
+    if (visible_count == 0) {
+        printf("Нет активных заметок.\n");
+    }
+}
+
+// Поиск заметок
+void search_notes() {
+    if (note_count == 0) {
+        printf("\nНет заметок для поиска.\n");
+        return;
+    }
+
+    int choice;
+    printf("\n--- Поиск заметок ---\n");
+    printf("1. По заголовку\n");
+    printf("2. По содержанию\n");
+    printf("3. По тегу\n");
+    printf("4. По дате создания\n");
+    printf("Выберите вариант поиска: ");
+    scanf("%d", &choice);
+
+    // Очистка буфера ввода
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    char search_term[100];
+    Date search_date;
+    int found = 0;
+
+    switch (choice) {
+        case 1:
+            printf("Введите текст для поиска в заголовке: ");
+            fgets(search_term, 100, stdin);
+            search_term[strcspn(search_term, "\n")] = '\0';
+
+            for (int i = 0; i < note_count; i++) {
+                if (!notes[i].is_deleted &&
+                    strstr(notes[i].title, search_term) != NULL) {
+                    printf_note(notes[i]);
+                    found = 1;
+                }
+            }
+            break;
+        case 2:
+
     }
 }
