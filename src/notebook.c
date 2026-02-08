@@ -200,6 +200,11 @@ void search_notes() {
             }
             break;
         case 2:
+            printf("Введите текст для поиска в содержании: ");
+            fgets(search_term, 100, stdin);
+            search_term[strcspn(search_term, "\n")] = '\0';
+
+
 
     }
 }
