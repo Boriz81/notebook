@@ -199,11 +199,25 @@ void search_notes() {
                 }
             }
             break;
+
         case 2:
             printf("Введите текст для поиска в содержании: ");
             fgets(search_term, 100, stdin);
             search_term[strcspn(search_term, "\n")] = '\0';
 
+            for (int i = 0; i < note_count; i++) {
+                if (!notes[i].is_deleted &&
+                    strstr(notes[i].content, search_term) != NULL) {
+                    print_note(notes[i]);
+                    found = 1;
+                }
+            }
+            break;
+
+        case 3:
+            printf("Введите тег для поиска: ");
+            fgets(search_term, 100, stdin);
+            search_term[strcspn(search_term, "\n")] = '\0';
 
 
     }
