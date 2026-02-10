@@ -219,6 +219,99 @@ void search_notes() {
             fgets(search_term, 100, stdin);
             search_term[strcspn(search_term, "\n")] = '\0';
 
+            for (int i = 0; i < note_count; i++) {
+                if (!notes[i].is_deleted) {
+                    for (int j = 0; j < notes[i].tag_count; j++) {
+                        if (strcmp(notes[i].tags[j], search_term) == 0) {
+                            print_note(notes[i]);
+                            found = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+
+        case 4:
+            printf("Введите дату для поиска (дд мм гггг): ");
+            scanf("%d %d %d", &search_date.day, &search_date.month, &seatch_date.year);
+
+            for (int i = 0; i < note_count; i++) {
+                if (!notes[i].is_deleted &&
+                    notes[i].created_date.day == search_date.day &&
+                    notes[i].created_date.month == search_date.month &&
+                    notes[i].created_date.year == search_date.year) {
+                        printf_note(notes[i]);
+                        found = 1;
+                    }
+            }
+            break;
+
+        default:
+            printf("Неверный выбор!\n");
+            return;
 
     }
+
+    if (!found) {
+        printf("Заметки на найдены.\n");
+    }
+}
+
+// Удаление заметки
+void delete_note() {
+    if (note_count == 0) {
+        printf("\nНет заметок для удаления.\n");
+        return;
+    }
+
+    int id;
+    printf("\n--- Удаление заметки ---\n");
+    printf("Введите ID заметки для удаления: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < note_count; i++) {
+        if (note[i].id == id && !notes[i].is_deleted) {
+            notes[i].is_deleted = 1;
+            found = 1;
+
+            // Обновление файла
+            FILE *file = fopen(FILENAME, "wb");
+            if (file) {
+                for (int j = 0; j < note_count; j++) {
+                    if (!notes[j].is_deleted) {
+                        fwrite(&notes[j], sizeof(Note), 1, file);
+                    }
+                }
+                fclose(file);
+                printf("Заметка удалена.\n");
+            } else {
+                printf("Ошибка обновления файла!\n");
+            }
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Заметка с ID %d не найдена.\n", id);
+    }
+}
+
+// Редактирование заметки
+void edit_note() {
+    if (note_count == 0) {
+        printf("\nНет заметок для редактирования.\n");
+        return;
+    }
+
+    int id;
+    printf("\n --- Редактирование заметки ---\n");
+    printf("Введите ID заметки для редактирования: ");
+    scanf("%d", &id);
+
+    // Очистка буфера ввода
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    int found = 0;
 }
