@@ -314,4 +314,80 @@ void edit_note() {
     while ((c = getchar()) != '\n' && c != EOF);
 
     int found = 0;
+    for (int i = 0; i < note_count; i++) {
+        if (notes[i].id == id && !notes[i].is_deleted) {
+            found = 1;
+            printf("\nТекущий заголовок: %s\n", notes[i].title);
+            printf("Введите новый заголовок (оставьте пустым чтобы не менять): ");
+
+            char new_title[MAX_TITLE_LENGTH];
+            fgets(new_title, MAX_TITLE_LENGTH, stdin);
+            new_title[strcspn(new_title, "\n")] = '\0';
+
+            if (strlen(new_title) > 0) {
+                strcpy(notes[i].title, new_title);
+            }
+
+            printf("\nТекущее содержание:\n%s\n", notes[i].content);
+            printf("Введите новое содержание (оставьте пустым чтобы не менять):\n");
+
+            char new_content[MAX_CONTENT_LENGTH];
+            fgets(new_content, MAX_CONTENT_LENGTH, stdin);
+            new_content[strcspn(new_content, "\n")] = '\0';
+
+            if (strlen(new_content) > 0) {
+                strcpy(notes[i].content, new_content);
+            }
+
+            // Обновление даты изменения
+            notes[i].modified_date = get_current_date();
+
+            // Обновление файла
+            FILE *file = fopen(FILENAME, "wb");
+            if (file) {
+                for (int j = 0; j < note_count; j++) {
+                    if (!notes[j].is_deleted) {
+                        fwrite(&notes[j], sizeof(Note), 1, file);
+                    }
+                }
+                fclose(file);
+                printf("Заметка обновлена.\n");
+            } else {
+                printf("Ошибка обновления файла!\n");
+            }
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Заметка с ID %d не найдена.\n", id);
+    }
 }
+
+// Просмотр заметки по ID
+void view_note_by_id() {
+    if (note_count == 0) {
+        printf("\nНет заметок для отображения.\n");
+        return;
+    }
+
+    int id;
+    printf("\n--- Просмотр заметки ---\n");
+    printf("Введите ID заметки: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < note_count; i++) {
+        if (notes[i].id == id && !notes[i].is_deleted) {
+            print_note(notes[i]);
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Заметка с ID %d не найдена.\n", id);
+    }
+}
+
+// Загрузка заметок из файла
