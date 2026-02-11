@@ -391,3 +391,87 @@ void view_note_by_id() {
 }
 
 // Загрузка заметок из файла
+void load_notes() {
+    FILE *file = fopen(FILENAME, "rb");
+    if (!file) {
+        // Файл не существует, это нормально для первого запуска
+        return;
+    }
+
+    // Определение размера файла
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    // Расчет количества заметок
+    note_count = file_size / sizeof(Note);
+    max_notes = note_count;
+
+    if (note_count > 0) {
+        notes = malloc(note_count * sizeof(Note));
+        if (notes) {
+            fread(notes, sizeof(Notes), note_count, file);
+        }
+    }
+
+    fclose(file);
+}
+
+// Печать меню
+void print_menu() {
+    printf("\n╔════════════════════════════════════════╗\n");
+    printf("║            БЛОКНОТ ЗАМЕТОК             ║\n");
+    printf("╠════════════════════════════════════════╣\n");
+    printf("║ 1. Добавить заметку                    ║\n");
+    printf("║ 2. Просмотреть все заметки (список)   ║\n");
+    printf("║ 3. Просмотреть заметку по ID          ║\n");
+    printf("║ 4. Поиск заметок                      ║\n");
+    printf("║ 5. Редактировать заметку              ║\n");
+    printf("║ 6. Удалить заметку                    ║\n");
+    printf("║ 7. Статистика                         ║\n");
+    printf("║ 0. Выход                              ║\n");
+    printf("╚════════════════════════════════════════╝\n");
+    printf("Выберите действие: ");
+}
+
+// Функции статистики
+void show_statistics() {
+    int active_count = 0;
+    int deleted_count = 0;
+
+    for (int i = 0; i < note_count; i++) {
+        if (notes[i].is_deleted) {
+            deleted_count++;
+        } else {
+            active_count++;
+        }
+    }
+
+    pritnf("\n--- Статистика --- \n");
+    printf("Всего заметок: %d\n", note_count);
+    printf("Активных заметок: %d\n", active_count);
+    printf("Удаление заметок: %d\n", delete_count);
+
+    if (active_count > 0) {
+        // Находим самую старую и самую новую заметку
+        int oldest_index = -1;
+        int newest_index = -1;
+
+        for (int i = 0; i < note_count; i++) {
+            if (!note[i].is_deleted) {
+                if (oldest_index == -1) {
+                    oldest_index = i;
+                    newest_index = i;
+                } else {
+                    // Сравнение дат для самой старой заметки
+                    if (notes[i].created_date.year < notes[oldest_index].created_date.year || (notes[i].created_date.year == notes[oldest_index].created_date.year && notes[i].created_date.month < notes[oldest_index].created_date.month) || (note[i].created_date.year == notes[oldest_index].created_date.year && notes[i].created_date.month == notes[oldest_index].created_date.month && note[i].created_date.day < notes[oldest_index].created_date.day)) {
+                        oldest_index = i;
+                    }
+
+                    // Сравнение дат для самой новой заметки
+
+                }
+            }
+        }
+    }
+}
