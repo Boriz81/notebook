@@ -469,9 +469,80 @@ void show_statistics() {
                     }
 
                     // Сравнение дат для самой новой заметки
-
+                    if (notes[i].created_date.year > notes[newest_index].created_date.year || (notes[i].created_date.year == notes[newest_index].created_date.year && notes[i].created_date.month > notes[newest_index].created_date.month) || (notes[i].created_date.year == notes[newest_index].created_date.year && notes[i].created_date.month == notes[newest_index].created_date.month && notes[i].created.day > notes[newest_index].created_date.day)) {
+                        newest_index = i;
+                    }
                 }
             }
         }
+
+        if (oldest_index != -1) {
+            printf("Самая старая заметка: \"%s\" (ID: %d, создана: %02d.%02d.%d)\n",
+                   notes[oldest_index].title,
+                   notes[oldest_index].id,
+                   notes[oldest_index].created_date.day,
+                   notes[oldest_index].created_date.month,
+                   notes[oldest_index].created_date.year);
+        }
+
+        if (newest_index != -1) {
+            printf("Самая новая заметка: \"%s\" (ID: %d, создана: %02d.%02d.%d)\n",
+                   notes[newest_index].title,
+                   notes[newest_index].id,
+                   notes[newest_index].created_date.day,
+                   notes[newest_index].created_date.month,
+                   notes[newest_index].created_date.year);
+        }
     }
+}
+
+// Главная функция
+int main() {
+    setlocale(LC_ALL, "Russian");
+
+    // Загрузка заметок из файла
+    load_notes();
+
+    int choise;
+
+    do {
+        print_menu();
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                add_note();
+                break;
+            case 2:
+                view_all_notes();
+                break;
+            case 3:
+                view_note_by_id();
+                break;
+            case 4:
+                search_notes();
+                break;
+            case 5:
+                edit_note();
+                break;
+            case 6:
+                delete_note();
+                break;
+            case 7:
+                show_statistics();
+                break;
+            case 0:
+                printf("\nВыход из программы...\n");
+                break;
+            default:
+                printf("\nНеверный выбор! Попробуйте снова.\n");
+        }
+    } while (choice != 0);
+
+    // Освобождение памяти
+    if (notes) {
+        free(notes);
+    }
+
+    return 0;
 }
