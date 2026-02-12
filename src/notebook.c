@@ -21,9 +21,9 @@ Date get_current_date() {
 // Получение следующего ID
 int get_next_id() {
     int max_id = 0;
-    for (int i = 0; i < not_count; i++) {
+    for (int i = 0; i < note_count; i++) {
         if (notes[i].id > max_id && !notes[i].is_deleted) {
-            max_id = noted[i].id;
+            max_id = notes[i].id;
         }
     }
     return max_id + 1;
@@ -51,7 +51,7 @@ void print_note(Note note) {
     printf("Изменено: %02d.%02d.%d\n",
             note.modified_date.day,
             note.modified_date.month,
-            note.modidied_date.year);
+            note.modified_date.year);
     printf("====================================================\n");
 }
 // Добавление новой заметки
@@ -148,7 +148,7 @@ void view_all_notes() {
 
     for (int i = 0; i < note_count; i++) {
         if (!notes[i].is_deleted) {
-            printf("%d. %s (ID:)\n",
+            printf("%d. %s (ID: %d)\n",
                    visible_count + 1,
                    notes[i].title,
                    notes[i].id);
@@ -194,7 +194,7 @@ void search_notes() {
             for (int i = 0; i < note_count; i++) {
                 if (!notes[i].is_deleted &&
                     strstr(notes[i].title, search_term) != NULL) {
-                    printf_note(notes[i]);
+                    print_note(notes[i]);
                     found = 1;
                 }
             }
@@ -230,17 +230,18 @@ void search_notes() {
                     }
                 }
             }
+            break;
 
         case 4:
             printf("Введите дату для поиска (дд мм гггг): ");
-            scanf("%d %d %d", &search_date.day, &search_date.month, &seatch_date.year);
+            scanf("%d %d %d", &search_date.day, &search_date.month, &search_date.year);
 
             for (int i = 0; i < note_count; i++) {
                 if (!notes[i].is_deleted &&
                     notes[i].created_date.day == search_date.day &&
                     notes[i].created_date.month == search_date.month &&
                     notes[i].created_date.year == search_date.year) {
-                        printf_note(notes[i]);
+                        print_note(notes[i]);
                         found = 1;
                     }
             }
@@ -271,7 +272,7 @@ void delete_note() {
 
     int found = 0;
     for (int i = 0; i < note_count; i++) {
-        if (note[i].id == id && !notes[i].is_deleted) {
+        if (notes[i].id == id && !notes[i].is_deleted) {
             notes[i].is_deleted = 1;
             found = 1;
 
@@ -410,7 +411,7 @@ void load_notes() {
     if (note_count > 0) {
         notes = malloc(note_count * sizeof(Note));
         if (notes) {
-            fread(notes, sizeof(Notes), note_count, file);
+            fread(notes, sizeof(notes), note_count, file);
         }
     }
 
@@ -423,13 +424,13 @@ void print_menu() {
     printf("║            БЛОКНОТ ЗАМЕТОК             ║\n");
     printf("╠════════════════════════════════════════╣\n");
     printf("║ 1. Добавить заметку                    ║\n");
-    printf("║ 2. Просмотреть все заметки (список)   ║\n");
-    printf("║ 3. Просмотреть заметку по ID          ║\n");
-    printf("║ 4. Поиск заметок                      ║\n");
-    printf("║ 5. Редактировать заметку              ║\n");
-    printf("║ 6. Удалить заметку                    ║\n");
-    printf("║ 7. Статистика                         ║\n");
-    printf("║ 0. Выход                              ║\n");
+    printf("║ 2. Просмотреть все заметки (список)    ║\n");
+    printf("║ 3. Просмотреть заметку по ID           ║\n");
+    printf("║ 4. Поиск заметок                       ║\n");
+    printf("║ 5. Редактировать заметку               ║\n");
+    printf("║ 6. Удалить заметку                     ║\n");
+    printf("║ 7. Статистика                          ║\n");
+    printf("║ 0. Выход                               ║\n");
     printf("╚════════════════════════════════════════╝\n");
     printf("Выберите действие: ");
 }
@@ -447,10 +448,10 @@ void show_statistics() {
         }
     }
 
-    pritnf("\n--- Статистика --- \n");
+    printf("\n--- Статистика --- \n");
     printf("Всего заметок: %d\n", note_count);
     printf("Активных заметок: %d\n", active_count);
-    printf("Удаление заметок: %d\n", delete_count);
+    printf("Удаление заметок: %d\n", deleted_count);
 
     if (active_count > 0) {
         // Находим самую старую и самую новую заметку
@@ -458,18 +459,18 @@ void show_statistics() {
         int newest_index = -1;
 
         for (int i = 0; i < note_count; i++) {
-            if (!note[i].is_deleted) {
+            if (!notes[i].is_deleted) {
                 if (oldest_index == -1) {
                     oldest_index = i;
                     newest_index = i;
                 } else {
                     // Сравнение дат для самой старой заметки
-                    if (notes[i].created_date.year < notes[oldest_index].created_date.year || (notes[i].created_date.year == notes[oldest_index].created_date.year && notes[i].created_date.month < notes[oldest_index].created_date.month) || (note[i].created_date.year == notes[oldest_index].created_date.year && notes[i].created_date.month == notes[oldest_index].created_date.month && note[i].created_date.day < notes[oldest_index].created_date.day)) {
+                    if (notes[i].created_date.year < notes[oldest_index].created_date.year || (notes[i].created_date.year == notes[oldest_index].created_date.year && notes[i].created_date.month < notes[oldest_index].created_date.month) || (notes[i].created_date.year == notes[oldest_index].created_date.year && notes[i].created_date.month == notes[oldest_index].created_date.month && notes[i].created_date.day < notes[oldest_index].created_date.day)) {
                         oldest_index = i;
                     }
 
                     // Сравнение дат для самой новой заметки
-                    if (notes[i].created_date.year > notes[newest_index].created_date.year || (notes[i].created_date.year == notes[newest_index].created_date.year && notes[i].created_date.month > notes[newest_index].created_date.month) || (notes[i].created_date.year == notes[newest_index].created_date.year && notes[i].created_date.month == notes[newest_index].created_date.month && notes[i].created.day > notes[newest_index].created_date.day)) {
+                    if (notes[i].created_date.year > notes[newest_index].created_date.year || (notes[i].created_date.year == notes[newest_index].created_date.year && notes[i].created_date.month > notes[newest_index].created_date.month) || (notes[i].created_date.year == notes[newest_index].created_date.year && notes[i].created_date.month == notes[newest_index].created_date.month && notes[i].created_date.day > notes[newest_index].created_date.day)) {
                         newest_index = i;
                     }
                 }
@@ -498,12 +499,11 @@ void show_statistics() {
 
 // Главная функция
 int main() {
-    setlocale(LC_ALL, "Russian");
 
     // Загрузка заметок из файла
     load_notes();
 
-    int choise;
+    int choice;
 
     do {
         print_menu();
